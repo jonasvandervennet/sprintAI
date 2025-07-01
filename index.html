@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Blueprint: AI Sprint Analysis App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: "Calm Neutral" -->
+    <!-- Application Structure Plan: The SPA is structured into five thematic, navigable sections: 'Overview', 'Market', 'Biomechanics', 'Architecture', and 'Roadmap'. This non-linear design replaces the original report's linear structure, allowing a user (likely a developer or product manager) to immediately access the information most relevant to them. The top navigation is fixed for persistent access. This task-oriented flow—understanding the opportunity, the science, the tech, then the plan—is a more logical discovery path for building a product than reading a report cover-to-cover. -->
+    <!-- Visualization & Content Choices: The application uses a variety of interactive elements to make the dense report data digestible. Goal: Compare Market -> Viz: Interactive Cards -> Interaction: Hover effects to reveal details -> Justification: More engaging than a static list of competitors. Goal: Understand KPIs -> Viz: Interactive Cards + Chart.js Bar Chart -> Interaction: Toggle between sprint phases, click cards to expand, view charts showing ideal angle ranges -> Justification: Transforms numerical data from the report into a quick visual reference, making complex biomechanics easier to grasp. Goal: Explain Tech -> Viz: HTML/CSS Diagram -> Interaction: Static visual flow -> Justification: Simplifies the complex processing pipeline into an easy-to-follow visual. Goal: Show Plan -> Viz: Vertical Timeline -> Interaction: Scroll-based discovery -> Justification: More engaging and intuitive for understanding a phased project plan than a text list. Library: Chart.js for all charts. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 120px;
+            max-height: 150px;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link.active {
+            color: #2563eb; /* text-blue-600 */
+            border-bottom-color: #2563eb;
+        }
+        .kpi-card {
+            transition: all 0.3s ease-in-out;
+            max-height: 5rem;
+            overflow: hidden;
+        }
+        .kpi-card.open {
+            max-height: 50rem; /* Large enough to show content */
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-700">
+
+    <div id="app-container" class="w-full">
+
+        <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 border-b border-slate-200">
+            <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <span class="font-bold text-lg text-slate-800">AI Sprint Blueprint</span>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent">Overview</a>
+                            <a href="#market" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent">Market</a>
+                            <a href="#biomechanics" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent">Biomechanics</a>
+                            <a href="#architecture" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent">Architecture</a>
+                            <a href="#roadmap" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-blue-600 border-b-2 border-transparent">Roadmap</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <section id="overview" class="py-20 md:py-28">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-slate-900">Blueprint for an AI-Powered Sprint Analysis Application</h1>
+                    <p class="mt-6 text-lg text-slate-600">This interactive document outlines a comprehensive plan for developing a specialized AI application for sprint analysis. It explores the market opportunity, delves into the core biomechanical principles, defines the technology architecture, and lays out a feasible development roadmap for a solo engineer. The project is not only viable but addresses a clear gap in the market for an accessible, sprinter-focused coaching tool.</p>
+                </div>
+            </section>
+
+            <section id="market" class="py-20 bg-white">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold tracking-tight text-slate-900">Market Opportunity</h2>
+                        <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">The current AI fitness market is saturated with endurance-focused apps, creating a "barbell" distribution with expensive pro-tools on the other end. This leaves a significant niche for an accessible, high-fidelity analysis tool designed specifically for sprinters and field sport athletes.</p>
+                    </div>
+
+                    <div class="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                        <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                            <h3 class="font-semibold text-slate-900">Endurance-Focused Market</h3>
+                            <p class="mt-2 text-sm text-slate-600">Dominant players like <span class="font-medium text-slate-800">Ochy</span> and <span class="font-medium text-slate-800">Movaia</span> target marathon runners. Their analysis of metrics like vertical oscillation is contextualized for long-distance efficiency, leaving sprinter-specific needs unaddressed.</p>
+                        </div>
+                        <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                            <h3 class="font-semibold text-slate-900">The Niche Sprint Players</h3>
+                            <p class="mt-2 text-sm text-slate-600"><span class="font-medium text-slate-800">Sprint.AI</span> validates the concept but appears to be a complex, enterprise-level B2B solution for professional teams, not individual athletes. This confirms the demand while leaving the consumer market open.</p>
+                        </div>
+                        <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                            <h3 class="font-semibold text-slate-900">The Opportunity Gap</h3>
+                            <p class="mt-2 text-sm text-slate-600">An app that understands the KPIs of acceleration (force production) and max velocity (cyclical mechanics) can offer far more relevant feedback and capture the underserved market of individual sprinters and coaches.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="biomechanics" class="py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold tracking-tight text-slate-900">Sprint Biomechanics: The Science of Speed</h2>
+                        <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">An effective AI coach must understand that sprinting consists of two distinct mechanical phases: Acceleration and Maximum Velocity. This section breaks down the Key Performance Indicators (KPIs) for each phase. Click on any KPI to see more details.</p>
+                    </div>
+                    
+                    <div class="mt-12 max-w-xl mx-auto">
+                        <div class="flex justify-center p-1 bg-slate-200 rounded-lg">
+                            <button id="accel-btn" class="phase-btn w-1/2 py-2 text-sm font-semibold rounded-md bg-white text-blue-600 shadow">Acceleration</button>
+                            <button id="maxv-btn" class="phase-btn w-1/2 py-2 text-sm font-semibold rounded-md text-slate-600">Max Velocity</button>
+                        </div>
+                    </div>
+
+                    <div id="kpi-content" class="mt-12 max-w-4xl mx-auto">
+                    </div>
+
+                </div>
+            </section>
+
+            <section id="architecture" class="py-20 bg-white">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold tracking-tight text-slate-900">Tech Stack & Architecture</h2>
+                        <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">The project's feasibility rests on leveraging mature, accessible AI tools. This section outlines the recommended technology for the core engine, system architecture, and the intelligent feedback loop.</p>
+                    </div>
+
+                    <div class="mt-16 space-y-16">
+                        <div>
+                            <h3 class="text-xl font-semibold text-center text-slate-800">Recommended Processing Pipeline</h3>
+                            <div class="mt-8 flex flex-col md:flex-row items-center justify-center gap-4 text-center">
+                                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 w-full md:w-auto">
+                                    <h4 class="font-semibold">1. Video Input</h4>
+                                    <p class="text-sm">User captures video on smartphone</p>
+                                </div>
+                                <div class="text-2xl font-mono text-slate-400 transform md:rotate-0 rotate-90">&rarr;</div>
+                                <div class="bg-blue-100 text-blue-800 p-4 rounded-lg border border-blue-200 w-full md:w-auto">
+                                    <h4 class="font-semibold">2. Pose Estimation</h4>
+                                    <p class="text-sm">On-device processing with <b class="font-bold">MediaPipe Pose</b></p>
+                                </div>
+                                <div class="text-2xl font-mono text-slate-400 transform md:rotate-0 rotate-90">&rarr;</div>
+                                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 w-full md:w-auto">
+                                    <h4 class="font-semibold">3. KPI Calculation</h4>
+                                    <p class="text-sm">Extract angles & timings from keypoints</p>
+                                </div>
+                                <div class="text-2xl font-mono text-slate-400 transform md:rotate-0 rotate-90">&rarr;</div>
+                                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 w-full md:w-auto">
+                                    <h4 class="font-semibold">4. Actionable Feedback</h4>
+                                    <p class="text-sm">Rules-engine generates coaching cues</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-semibold text-center text-slate-800">Pose Estimation Model Comparison</h3>
+                             <div class="mt-8 flow-root">
+                                <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                    <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                                        <table class="min-w-full divide-y divide-slate-300">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-0">Model</th>
+                                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Strength</th>
+                                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Best For</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-slate-200">
+                                                <tr class="bg-blue-50">
+                                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-0">MediaPipe Pose <span class="ml-2 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">Recommended</span></td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-600">Excellent on-device speed & cross-platform support.</td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-600">Mobile/Web MVP, real-time feedback.</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-0">OpenPose</td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-600">High accuracy, robust multi-person detection.</td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-600">Offline academic research.</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-0">Ultralytics YOLO-Pose</td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-600">State-of-the-art speed and accuracy.</td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-600">High-performance apps, future versions.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="roadmap" class="py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold tracking-tight text-slate-900">Phased Development Roadmap</h2>
+                        <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">A disciplined, phased approach is key for a solo developer. This roadmap breaks the project into manageable, value-driven stages, starting with a tightly-scoped MVP.</p>
+                    </div>
+
+                    <div class="mt-16 max-w-2xl mx-auto">
+                        <div class="relative">
+                            <div class="absolute left-1/2 top-0 h-full w-0.5 bg-slate-300" aria-hidden="true"></div>
+                            <div class="relative flex items-start group">
+                                <span class="h-9 flex items-center">
+                                    <span class="relative z-10 w-8 h-8 flex items-center justify-center bg-blue-600 rounded-full text-white font-bold">1</span>
+                                </span>
+                                <div class="ml-8 w-full pb-16">
+                                    <h3 class="font-semibold text-lg text-slate-900">MVP: "The Acceleration Analyzer"</h3>
+                                    <p class="mt-2 text-slate-600">Focus exclusively on the acceleration phase (0-30m). Analyze only the two most critical KPIs: Forward Torso Lean and Positive Shin Angle. This provides immediate value and a solid foundation.</p>
+                                </div>
+                            </div>
+                             <div class="relative flex items-start group">
+                                <span class="h-9 flex items-center">
+                                    <span class="relative z-10 w-8 h-8 flex items-center justify-center bg-slate-400 group-hover:bg-blue-600 rounded-full text-white font-bold transition-colors">2</span>
+                                </span>
+                                <div class="ml-8 w-full pb-16">
+                                    <h3 class="font-semibold text-lg text-slate-900">Phase 2: Max Velocity Module</h3>
+                                    <p class="mt-2 text-slate-600">Expand analysis to the max velocity phase. Incorporate new KPIs like upright posture, cyclical leg action ("Figure 4"), and foot-strike position. Make the feedback engine phase-aware.</p>
+                                </div>
+                            </div>
+                            <div class="relative flex items-start group">
+                                <span class="h-9 flex items-center">
+                                    <span class="relative z-10 w-8 h-8 flex items-center justify-center bg-slate-400 group-hover:bg-blue-600 rounded-full text-white font-bold transition-colors">3</span>
+                                </span>
+                                <div class="ml-8 w-full pb-16">
+                                    <h3 class="font-semibold text-lg text-slate-900">Phase 3: Progression Tracking</h3>
+                                    <p class="mt-2 text-slate-600">Implement user profiles and local data storage to track KPIs over time. Add simple charts to visualize an athlete's improvement, turning the app into a long-term training log.</p>
+                                </div>
+                            </div>
+                             <div class="relative flex items-start group">
+                                <span class="h-9 flex items-center">
+                                    <span class="relative z-10 w-8 h-8 flex items-center justify-center bg-slate-400 group-hover:bg-blue-600 rounded-full text-white font-bold transition-colors">4</span>
+                                </span>
+                                <div class="ml-8 w-full">
+                                    <h3 class="font-semibold text-lg text-slate-900">Phase 4: Personalized Drill Library</h3>
+                                    <p class="mt-2 text-slate-600">Add a library of corrective drills. Based on identified weaknesses, the app can suggest and demonstrate targeted exercises (e.g., Wall Drills for poor shin angles), closing the feedback loop.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="bg-white border-t border-slate-200">
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm text-slate-500">
+                <p>Interactive Blueprint generated from source report. All content derived from "Blueprint for an AI-Powered Sprint Analysis Application".</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const kpis = {
+                acceleration: [
+                    {
+                        id: 'torsoLean',
+                        name: 'Forward Torso Lean',
+                        summary: 'Orients ground reaction force horizontally to maximize forward propulsion.',
+                        details: 'At the start, this angle should be around 45-50 degrees relative to the ground. A primary technical fault is the premature loss of this lean, often visible as the head and chest rising too quickly. The AI should measure the angle of the line segment connecting the shoulder and hip keypoints relative to a vertical line.',
+                        fault: '"Popping up" too early; torso is vertical within the first 10m.',
+                        chartData: { labels: ['Angle'], datasets: [{ label: 'Too Low', data: [45], backgroundColor: '#fecaca' }, { label: 'Ideal', data: [10], backgroundColor: '#a7f3d0' }, { label: 'Too High', data: [35], backgroundColor: '#fecaca'}] }
+                    },
+                    {
+                        id: 'shinAngle',
+                        name: 'Positive Shin Angle',
+                        summary: 'Ensures force is directed backward into the ground, propelling the athlete forward.',
+                        details: 'This is arguably the single most important determinant of effective acceleration. The shin of the support leg at ground contact must be "positive," meaning the shin is angled forward with the knee ahead of the ankle. A vertical or negative shin angle creates a significant braking effect.',
+                        fault: 'Shin is vertical or negative at ground contact, creating a braking force.',
+                        chartData: { labels: ['Angle'], datasets: [{ label: 'Braking', data: [40], backgroundColor: '#fecaca' }, { label: 'Ideal', data: [15], backgroundColor: '#a7f3d0' }, { label: 'Inefficient', data: [35], backgroundColor: '#fef08a'}] }
+                    },
+                    {
+                        id: 'tripleExtension',
+                        name: 'Triple Extension',
+                        summary: 'Maximizes force production from the powerful hip, knee, and ankle extensor muscles.',
+                        details: 'The power for acceleration comes from the explosive, synchronized extension of the ankle, knee, and hip of the stance leg. This powerful "piston action" is what drives the body forward and away from the ground. The AI should assess the degree of extension in these joints at toe-off.',
+                        fault: 'Incomplete extension, indicating a lack of force production.',
+                    }
+                ],
+                max_velocity: [
+                    {
+                        id: 'uprightPosture',
+                        name: 'Upright Posture',
+                        summary: 'Aligns the body to apply large vertical forces efficiently.',
+                        details: 'At top speed, the body should be tall and erect, with the head, neck, and spine neutrally aligned over the hips. This posture facilitates the application of large vertical forces needed to project the body into the next flight phase.',
+                        fault: 'Excessive forward lean or backward arching; anterior pelvic tilt.',
+                    },
+                    {
+                        id: 'footStrike',
+                        name: 'Foot-Strike Position',
+                        summary: 'Minimizes braking forces upon ground contact, preserving momentum.',
+                        details: 'To avoid braking, the foot must make contact with the ground at or only slightly in front of the body\'s center of mass (hips). A common error is to land with the foot far out in front, creating a powerful braking force with every step.',
+                        fault: 'Over-striding; foot lands significantly in front of the center of mass.',
+                    },
+                    {
+                        id: 'cyclicalLeg',
+                        name: 'Cyclical Leg Action ("Figure 4")',
+                        summary: 'Minimizes the moment of inertia of the swing leg for a faster leg recovery.',
+                        details: 'The ideal visual is the "Figure 4" position: the support leg is under the hip, while the swing leg\'s thigh is driven high with the heel tucked up close to the hamstring. This minimizes the leg\'s moment of inertia, allowing it to swing through much faster.',
+                        fault: 'Excessive "backside mechanics"; low heel recovery, casting the leg out.',
+                    }
+                ]
+            };
+
+            const kpiContainer = document.getElementById('kpi-content');
+            const accelBtn = document.getElementById('accel-btn');
+            const maxvBtn = document.getElementById('maxv-btn');
+            let activeCharts = [];
+
+            function renderKPIs(phase) {
+                kpiContainer.innerHTML = '';
+                activeCharts.forEach(chart => chart.destroy());
+                activeCharts = [];
+
+                const kpiData = kpis[phase];
+                kpiData.forEach(kpi => {
+                    const hasChart = kpi.chartData;
+                    const card = document.createElement('div');
+                    card.className = 'kpi-card bg-white border border-slate-200 rounded-lg p-4 cursor-pointer hover:border-blue-400 mb-4';
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-semibold text-slate-800">${kpi.name}</h4>
+                            <span class="text-slate-400 transform transition-transform duration-300">▼</span>
+                        </div>
+                        <div class="mt-4 text-sm text-slate-600 space-y-3">
+                            <p>${kpi.summary}</p>
+                            <p>${kpi.details}</p>
+                            <p><strong class="text-slate-700">Common Fault:</strong> ${kpi.fault}</p>
+                            ${hasChart ? `<div class="mt-4 chart-container"><canvas id="chart-${kpi.id}"></canvas></div>` : ''}
+                        </div>
+                    `;
+                    kpiContainer.appendChild(card);
+
+                    if (hasChart) {
+                        const ctx = document.getElementById(`chart-${kpi.id}`).getContext('2d');
+                        const newChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: kpi.chartData,
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    x: { stacked: true, display: false },
+                                    y: { stacked: true, display: false }
+                                },
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: { enabled: true, mode: 'index', intersect: false }
+                                }
+                            }
+                        });
+                        activeCharts.push(newChart);
+                    }
+                });
+
+                kpiContainer.querySelectorAll('.kpi-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        card.classList.toggle('open');
+                        const arrow = card.querySelector('span');
+                        arrow.classList.toggle('rotate-180');
+                    });
+                });
+            }
+            
+            accelBtn.addEventListener('click', () => {
+                renderKPIs('acceleration');
+                accelBtn.classList.add('bg-white', 'text-blue-600', 'shadow');
+                maxvBtn.classList.remove('bg-white', 'text-blue-600', 'shadow');
+            });
+
+            maxvBtn.addEventListener('click', () => {
+                renderKPIs('max_velocity');
+                maxvBtn.classList.add('bg-white', 'text-blue-600', 'shadow');
+                accelBtn.classList.remove('bg-white', 'text-blue-600', 'shadow');
+            });
+            
+            renderKPIs('acceleration');
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+        });
+    </script>
+
+</body>
+</html>
